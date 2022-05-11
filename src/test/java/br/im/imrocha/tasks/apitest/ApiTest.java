@@ -68,5 +68,28 @@ public class ApiTest {
 			.body("message", CoreMatchers.is("Due date must not be in past"))
 			.statusCode(400);		
 	}
+
+	@Test
+	public void shouldRemoveTask() {
+		
+		Task todo = new Task();
+		todo.task = "tests task";
+		todo.dueDate = LocalDate.now().plusMonths(1).toString();
+		
+		Integer id = RestAssured
+		.given()
+			.body(objectToJSON(todo))
+			.contentType(ContentType.JSON)
+		.when()
+			.post("/todo")
+		.then()
+			.statusCode(201).extract().path("id");
+			
+		RestAssured.given()
+		.when()
+			.delete("/todo/"+id)
+		.then()
+			.statusCode(204);		
+	}
 }
 
